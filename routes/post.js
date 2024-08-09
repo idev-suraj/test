@@ -1,5 +1,5 @@
 const { isAuthenticated } = require("../middlewares/auth");
-const { createPost, updatePost, likesHandle, addComment, deleteComment, save, updateComment, deletePost, getPost, userPosts, explore, savedPosts, homePosts } = require("../controllers/post");
+const { createPost, updatePost, likesHandle, addComment, deleteComment, save, updateComment, deletePost, getPost, userPosts, explore, savedPosts, homePosts,deleteSavedPosts } = require("../controllers/post");
 
 const router = require("express").Router();
 
@@ -26,6 +26,8 @@ router.route("/get/explore").get(isAuthenticated,explore)
 router.route("/get/saved").get(isAuthenticated,savedPosts)
 
 router.route("/get/home").get(isAuthenticated,homePosts)
+
+router.route("/get/deletesaved").get(isAuthenticated,deleteSavedPosts)
 
 
 module.exports = router;

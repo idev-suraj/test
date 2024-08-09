@@ -294,6 +294,35 @@ exports.savedPosts = async (req, res) => {
   }
 };
 
+exports.deleteSavedPosts=async(req,res)=>{
+  try{
+    const findUser = await User.findOne({ _id: req.user._id });
+    const saved=findUser.saved
+    const posts= await Post.find()
+    let toDelete=[]
+    saved.find(sp=>{
+      if(posts.some(p=>p._id.toString()==sp.toString())){
+      }
+      else{
+        toDelete.push(sp.toString())
+        console.log("not match",sp)
+      }
+    })
+    toDelete.length>0? User.updateOne(
+      { _id: req.user._id  },
+      { $pull: { saved:{$in:toDelete}}}
+    ).then(res=>console.log("deleted")).catch(err=>console.log("not deletd ",err))
+    :''
+   
+    res.send({success:true})
+  } catch(err){
+    res.send({
+      success:false,
+      message:err.message
+    })
+  }
+}
+
 // followings + my posts (home)
 exports.homePosts = async (req, res) => {
   try {
