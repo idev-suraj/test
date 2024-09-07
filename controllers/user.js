@@ -154,6 +154,88 @@ exports.notications = async (req, res) => {
     });
   }
 };
+exports.deleteNotifications=async(req,res)=>{
+
+  let toDeleteNoti=[]
+  const userId=req.user._id
+  const notificationType = 3;
+  const findUser = await User.findOne({ _id: userId});
+  try{
+    const followNotifications=findUser.notifications.reverse()
+    const seenNotifications = new Set();
+    const duplicatesToDelete = [];
+
+    
+    // Step 2: Iterate through notifications to find duplicates
+    followNotifications.forEach(notification => {
+      if (notification.NotificationType === notificationType) {
+        const uniqueIdentifier = `${notification.user}`;
+        if (seenNotifications.has(uniqueIdentifier)) {
+          // Mark duplicate notifications for deletion
+          duplicatesToDelete.push(notification._id);
+        } else {
+          seenNotifications.add(uniqueIdentifier);
+        }
+      }
+    });
+
+    followNotifications.forEach(notification => {
+      if (notification.NotificationType === 1) {
+        const uniqueIdentifier = `${notification.user}`;
+        if (seenNotifications.has(uniqueIdentifier)) {
+          // Mark duplicate notifications for deletion
+          duplicatesToDelete.push(notification._id);
+        } else {
+          seenNotifications.add(uniqueIdentifier);
+        }
+      }
+    });
+    
+    // // Step 3: Remove duplicates
+    if (duplicatesToDelete.length > 0) {
+      User.updateMany(
+        { _id: userId },
+        { $pull: { notifications: { _id: { $in: duplicatesToDelete } } } }
+      ).then(res=>console.log(res)).catch(err=>console.log(err));
+    }
+
+    
+  
+    const notifications=findUser.notifications
+    let followNoti=[]
+    findUser.notifications.map(n=>
+      
+      n.NotificationType==3&&followNoti.push(n)
+    )
+
+
+    const posts= findUser.posts
+    notifications.find(noti=>{
+      if(posts.some(p=>noti.postId&&p.toString()==noti.postId.toString())){
+      }
+      else{
+        noti.postId&&toDeleteNoti.push(noti._id.toString())
+      }
+    })
+    console.log(toDeleteNoti)
+    toDeleteNoti.length>0?
+    User.updateOne(
+      {_id:userId},
+      {$pull:{notifications:{_id:{$in:toDeleteNoti}}}}
+    )
+    .then(res=>console.log("deleted"))
+    .catch(err=>console.log(err))
+    :
+    ''
+    res.send({filt})
+  } catch(err){
+    res.send({
+      success:false,
+      message:err.message
+    })
+  }
+
+}
 
 // update user
 exports.updateUser = async (req, res) => {
